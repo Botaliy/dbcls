@@ -38,7 +38,6 @@ style = Style.from_dict(
 
 class Editor:
     def __init__(self):
-        self.buffer = Buffer()
         self.editor_layout = EditorLayout(self)
         self.key_bindings = create_key_bindings(self)
         self.app = self._create_app()
@@ -59,3 +58,19 @@ class Editor:
     
     def set_client(self, client):
         self.sql_client = client
+
+    def get_sql_command(self):
+        buff = self.editor_layout.layout.current_buffer
+        cursor_position = buff.cursor_position
+        delimiter = ';'
+        text = buff.text
+        start_pos = text.rfind(delimiter, 0, cursor_position) + 1
+        
+        end_pos = text.find(delimiter, 0, cursor_position)
+        if end_pos == -1:  # Если не найден, берем до конца буфера
+            end_pos = len(text)
+        
+        # Извлечение команды
+        sql_command = text[start_pos:end_pos].strip()
+        
+        return sql_command

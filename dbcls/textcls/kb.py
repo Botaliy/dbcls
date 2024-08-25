@@ -21,7 +21,7 @@ def create_key_bindings(editor):
 
     @kb.add("c-r")
     async def run_sql_command(event):
-        b = editor.editor_layout.layout.current_buffer
-        print(b)
+        comm = editor.get_sql_command()
+        result = await editor.sql_client.execute(comm)
 
     return kb
