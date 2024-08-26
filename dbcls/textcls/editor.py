@@ -14,7 +14,7 @@ from prompt_toolkit.document import Document
 from pygments.lexers.python import PythonLexer
 from prompt_toolkit.lexers import Lexer
 from prompt_toolkit.formatted_text import FormattedText
-# from .lexer import SqlLexer
+import visidata
 from textcls.kb import create_key_bindings
 from prompt_toolkit.enums import EditingMode
 from textcls.layout import EditorLayout
@@ -65,7 +65,7 @@ class Editor:
         delimiter = ';'
         text = buff.text
         start_pos = text.rfind(delimiter, 0, cursor_position) + 1
-        
+
         end_pos = text.find(delimiter, 0, cursor_position)
         if end_pos == -1:  # Если не найден, берем до конца буфера
             end_pos = len(text)
@@ -74,3 +74,8 @@ class Editor:
         sql_command = text[start_pos:end_pos].strip()
         
         return sql_command
+
+    async def run_visidata(self, result):
+        visidata.vd.run()
+        visidata.vd.view(result.data)
+    

@@ -376,13 +376,13 @@ async def main():
 
     # imported here to make db libs dependencies optional
     if engine == 'clickhouse':
-        from .clients.clickhouse import ClickhouseClient
+        from clients.clickhouse import ClickhouseClient
         client = ClickhouseClient(host, username, password, dbname, port=port)
     if engine == 'mysql':
-        from .clients.mysql import MysqlClient
+        from clients.mysql import MysqlClient
         client = MysqlClient(host, username, password, dbname, port=port)
     if engine == 'postgres':
-        from .clients.postgres import PostgresClient
+        from clients.postgres import PostgresClient
         client = PostgresClient(host, username, password, dbname, port=port)
     if engine == 'sqlite3':
         client = Sqlite3Client(filepath)

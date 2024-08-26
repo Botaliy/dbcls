@@ -1,5 +1,6 @@
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.filters import has_completions
+import asyncio
 
 
 def create_key_bindings(editor):
@@ -23,5 +24,6 @@ def create_key_bindings(editor):
     async def run_sql_command(event):
         comm = editor.get_sql_command()
         result = await editor.sql_client.execute(comm)
+        asyncio.create_task(editor.run_visidata(result))
 
     return kb
