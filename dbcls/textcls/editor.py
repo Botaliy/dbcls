@@ -37,14 +37,19 @@ style = Style.from_dict(
 
 
 class Editor:
-    def __init__(self):
-        self.editor_layout = EditorLayout(self)
+    def __init__(self, input):
+        self.input = input
+        self.editor_layout = EditorLayout(self, input)
         self.key_bindings = create_key_bindings(self)
         self.app = self._create_app()
         self.sql_client = None
 
     async def run(self):
         await self.app.run_async()
+    
+
+    async def redraw(self):
+        self.app.renderer.erase()
 
     def _create_app(self):
         application = Application(
@@ -75,7 +80,11 @@ class Editor:
         
         return sql_command
 
-    async def run_visidata(self, result):
+    def run_visidata(self, result):
         visidata.vd.run()
         visidata.vd.view(result.data)
-    
+
+    def save_buffer(self):
+        buff: Buffer = self.editor_layout.layout.current_buffer
+        with open(self.input, "w") as f:
+            f.write(buff.text)

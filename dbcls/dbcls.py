@@ -340,8 +340,9 @@ async def main():
         choices=['clickhouse', 'mysql', 'postgres', 'sqlite3'])
     parser.add_argument('--dbname', '-d', dest='dbname', help='specify db name', required=False)
     parser.add_argument('--filepath', '-f', dest='filepath', help='specify db filepath', required=False)
-
-    args = parser.parse_args()
+    args, argv = parser.parse_known_args()
+    if len(argv) != 1:
+        parser.error(f"Only one filename: {', '.join(argv)}")
 
     host = args.host
     username = args.user
@@ -386,7 +387,7 @@ async def main():
         client = PostgresClient(host, username, password, dbname, port=port)
     if engine == 'sqlite3':
         client = Sqlite3Client(filepath)
-    editor = Editor()
+    editor = Editor(argv[0])
     editor.set_client(client)
     await editor.run()
 

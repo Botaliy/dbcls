@@ -5,7 +5,7 @@ from prompt_toolkit.layout.containers import (
     Window,
     HSplit,
     FloatContainer,
-    Float
+    Float,
 )
 from prompt_toolkit.layout.controls import FormattedTextControl, BufferControl
 from prompt_toolkit.filters import Condition
@@ -18,30 +18,40 @@ from prompt_toolkit.document import Document
 from prompt_toolkit.formatted_text import FormattedText
 from prompt_toolkit.styles import Style
 
-style = Style.from_dict({
-    "completion-menu.completion": "bg:#008888 #ffffff",
-    "completion-menu.completion.current": "bg:#00aaaa #000000",
-
-})
+style = Style.from_dict(
+    {
+        "completion-menu.completion": "bg:#008888 #ffffff",
+        "completion-menu.completion.current": "bg:#00aaaa #000000",
+    }
+)
 
 
 def handle_text(buffer):
     buffer.completer.get_completions(buffer.document, buffer.cursor_position)
 
+
 def handle_line_prefix(buffer, wrap_count):
     return FormattedText([("class:line-numbers", f" {buffer + 1} ")])
 
+def read_file(file):
+    with open(file, "r") as f:
+        return f.read()
+
 class EditorLayout:
-    def __init__(self, editor) -> None:
+    def __init__(self, editor, input) -> None:
         self.editor = editor
         main_buffer = Buffer(
-                                completer=completer,
-                                document=Document('', 0),
-                                multiline= False,
-                                on_text_changed=handle_text,
-                                complete_while_typing=True,
-                                name='dummy-buffer',
-                            )
+            completer=completer,
+            document=Document("", 0),
+            multiline=False,
+            on_text_changed=handle_text,
+            complete_while_typing=True,
+            name="dummy-buffer",
+        )
+        try:
+            main_buffer.insert_text(read_file(input))
+        except Exception as e:
+            raise Exception(f'File not found: {e}')
         self._fc = FloatContainer(
             content=VSplit(
                 [
@@ -61,12 +71,11 @@ class EditorLayout:
                     content=CompletionsMenu(max_height=16),
                     allow_cover_cursor=True,
                     xcursor=True,
-                    ycursor=True
+                    ycursor=True,
                 )
             ],
         )
         self.layout = Layout(container=HSplit([self._fc]))
-
 
 
 class TestContainer(ConditionalContainer):
@@ -80,6 +89,7 @@ class TestContainer(ConditionalContainer):
             ),
             filter=Condition(lambda: True),
         )
+
 
 class LineNumbersControl(FormattedTextControl):
     def __init__(self, editor):

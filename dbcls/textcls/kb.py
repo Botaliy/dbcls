@@ -3,7 +3,7 @@ from prompt_toolkit.filters import has_completions
 import asyncio
 
 
-def create_key_bindings(editor):
+def create_key_bindings(editor: 'Editor'):
     kb = KeyBindings()
 
     @kb.add("c-q")
@@ -24,6 +24,12 @@ def create_key_bindings(editor):
     async def run_sql_command(event):
         comm = editor.get_sql_command()
         result = await editor.sql_client.execute(comm)
-        asyncio.create_task(editor.run_visidata(result))
+        editor.run_visidata(result)
+        await editor.redraw()
+
+    
+    @kb.add("c-s")
+    def save_file(event):
+        editor.save_buffer()
 
     return kb
