@@ -7,16 +7,14 @@ from prompt_toolkit.layout.containers import (
     FloatContainer,
     Float,
 )
-from prompt_toolkit.layout.controls import FormattedTextControl, BufferControl
-from prompt_toolkit.filters import Condition
+from prompt_toolkit.layout.controls import BufferControl
 from prompt_toolkit.layout.containers import WindowAlign
-from prompt_toolkit.buffer import Buffer
 from textcls.lexer import SqlLexer
-from textcls.completer import completer
 from prompt_toolkit.layout.menus import CompletionsMenu
-from prompt_toolkit.document import Document
 from prompt_toolkit.formatted_text import FormattedText
 from prompt_toolkit.styles import Style
+from prompt_toolkit.filters import has_focus
+from prompt_toolkit.key_binding import KeyBindings
 
 style = Style.from_dict(
     {
@@ -40,25 +38,18 @@ def read_file(file):
 class EditorLayout:
     def __init__(self, editor, input) -> None:
         self.editor = editor
-        main_buffer = Buffer(
-            completer=completer,
-            document=Document("", 0),
-            multiline=False,
-            on_text_changed=handle_text,
-            complete_while_typing=True,
-            name="dummy-buffer",
-        )
+        
         try:
-            main_buffer.insert_text(read_file(input))
+            self.start_text = read_file(input)
         except Exception as e:
             raise Exception(f'File not found: {e}')
+        editor.main_buffer.insert_text(self.start_text)
         self._fc = FloatContainer(
             content=VSplit(
                 [
-                    # LineToolbar(self.editor),
                     Window(
                         BufferControl(
-                            buffer=main_buffer,
+                            buffer=editor.main_buffer,
                             lexer=SqlLexer(),
                         ),
                         wrap_lines=True,
@@ -75,46 +66,40 @@ class EditorLayout:
                 )
             ],
         )
-        self.layout = Layout(container=HSplit([self._fc]))
+        self.layout = Layout(container=HSplit([
+            self._fc,
+            BottomToolbar(self.editor),
+            ]))
 
 
-class TestContainer(ConditionalContainer):
-    def __init__(self):
-        super().__init__(
-            content=Window(
-                FormattedTextControl("Hello"),
-                width=5,
-                align=WindowAlign.CENTER,
-                style="bg:#ff0000",
-            ),
-            filter=Condition(lambda: True),
-        )
-
-
-class LineNumbersControl(FormattedTextControl):
+class BottomToolbar(ConditionalContainer):
     def __init__(self, editor):
-        def get_line_numbers():
-            return "\n".join(
-                str(i)
-                for i in range(
-                    1,
-                    editor.editor_layout.layout.current_buffer.document.line_count + 1,
-                )
-            )
-
-        super().__init__(get_line_numbers)
-
-
-class LineToolbar(ConditionalContainer):
-    def __init__(self, editor):
-        super().__init__(
-            content=Window(
-                LineNumbersControl(editor),
-                width=5,
-                align=WindowAlign.CENTER,
-                style="class:line-numbers",
-            ),
-            filter=Condition(lambda: True),
-        )
         self.editor = editor
-        self.show_line_numbers = True
+        super().__init__(
+            content=Window(
+                BufferControl(
+                    buffer=editor.confirm_save_buffer,
+                    key_bindings=self.get_kb(),
+                ),
+                align=WindowAlign.LEFT,
+                height=2,
+                style="bg:#cacaca",
+            ),
+            filter=has_focus(editor.confirm_save_buffer),
+        )
+    
+    def get_kb(self):
+        kb = KeyBindings()
+
+        @kb.add('y')
+        @kb.add('Y')
+        def save_file(event):
+            self.editor.save_buffer()
+            self.editor.app.exit()
+
+        @kb.add('n')
+        @kb.add('N')
+        def exit(event):
+            self.editor.app.exit()
+        
+        return kb
