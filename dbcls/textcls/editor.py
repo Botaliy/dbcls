@@ -92,15 +92,7 @@ class Editor:
     def get_sql_command(self):
         buff = self.editor_layout.layout.current_buffer
         cursor_position = buff.cursor_position
-        delimiter = ';'
         text = buff.text
-        # start_pos = text.rfind(delimiter, 0, cursor_position) + 1
-
-        # end_pos = text.find(delimiter, 0, cursor_position)
-        # if end_pos == -1:  # Если не найден, берем до конца буфера
-        #     end_pos = len(text)
-        
-        # sql_command = text[start_pos:end_pos].strip()
         
         start = text.rfind(';', 0, cursor_position) + 1
         end = text.find(';', cursor_position)
@@ -136,3 +128,6 @@ class Editor:
     def confirm_save(self):
         self.confirm_save_buffer.text = "Save changes? Y or N"
         self.editor_layout.layout.focus(self.confirm_save_buffer)
+
+    async def load_sql_scheme(self):
+        await self.sql_client.load_scheme()

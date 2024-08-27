@@ -4,13 +4,20 @@ from prompt_toolkit.completion.base import CompleteEvent, Completion
 from prompt_toolkit.document import Document
 import re
 from .sql_keywords import SQL_WORDS
+from textcls.schema import schema
+
 
 
 class SqlCompleter(Completer):
+
+
     def get_completions(
         self, document: Document, complete_event: CompleteEvent
     ) -> Iterable[Completion]:
         word_before_cursor = document.get_word_before_cursor()
+        if word_before_cursor.upper() == 'FROM' and schema.current_db:
+            for table in schema[schema.current_db]:
+                 yield Completion(table, start_position=document.cursor_position + 1)
         words = set()
         if len(word_before_cursor) == 0 or len(word_before_cursor) < 2:
             return

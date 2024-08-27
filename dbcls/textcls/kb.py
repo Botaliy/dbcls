@@ -34,5 +34,9 @@ def create_key_bindings(editor: 'Editor'):
     @kb.add(Keys.ControlS)
     def save_file(event):
         editor.save_buffer()
+    
+    @kb.add(Keys.ControlF)
+    async def load_sql_scheme(event):
+        await editor.load_sql_scheme()
 
     return kb

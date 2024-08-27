@@ -1,6 +1,7 @@
 import aiochclient
 from aiohttp import ClientSession
 from aiohttp import ClientTimeout
+from textcls.schema import schema
 
 from .base import (
     ClientClass,
@@ -13,6 +14,7 @@ class ClickhouseClient(ClientClass):
 
     def __init__(self, host, username, password, dbname, port='8123'):
         super().__init__(host, username, password, dbname, port)
+        self.schema = schema
         if not dbname:
             self.dbname = 'default'
         if not port:
@@ -23,6 +25,25 @@ class ClickhouseClient(ClientClass):
 
     async def get_databases(self) -> Result:
         return await self.execute('SHOW DATABASES')
+    
+
+    async def load_columns(self, table) -> Result:
+        return await self.execute(f'describe table {table}')
+    
+    async def get_current_database(self) -> Result:
+        return await self.execute('SELECT currentDatabase()')
+    
+    async def load_scheme(self) -> None:
+        result = await self.get_current_database()
+        db_name = next(i for i in result.data[0].values())
+        self.schema.current_db = db_name
+        self.schema[db_name] = {}
+        tables: Result = await self.get_tables()
+        for table in tables.data:
+            table_name = table['name']
+            columns = await self.load_columns(table_name)
+            self.schema[db_name][table_name] = [i['name'] for i in columns.data]
+        self.cache_schema(self.schema)
 
     async def execute(self, sql) -> Result:
         db = self.dbname

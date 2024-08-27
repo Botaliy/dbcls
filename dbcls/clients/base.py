@@ -1,8 +1,11 @@
 import abc
+from contextlib import suppress
 from dataclasses import (
     dataclass,
     field,
 )
+import pickle
+from textcls.schema import schema
 
 
 @dataclass
@@ -33,6 +36,7 @@ class ClientClass(abc.ABC):
         self.password = password
         self.dbname = dbname
         self.port = port
+        self.schema = schema
 
     @abc.abstractmethod
     def get_databases(self) -> Result:
@@ -58,3 +62,14 @@ class ClientClass(abc.ABC):
     @abc.abstractmethod
     async def execute(self, sql) -> Result:
         pass
+
+    
+    def cache_schema(self):
+        with suppress(Exception):
+            with open('schema.pkl', 'wb') as f:
+                pickle.dump(schema, f)
+        
+    def load_schema(self, filename):
+        with suppress(Exception):
+            with open('schema.pkl', 'rb') as f:
+                self.schema = pickle.load(f)

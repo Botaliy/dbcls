@@ -374,7 +374,6 @@ async def main():
             engine = config.get('engine', '')
         if not filepath:
             filepath = config.get('filepath', '')
-
     # imported here to make db libs dependencies optional
     if engine == 'clickhouse':
         from clients.clickhouse import ClickhouseClient
@@ -387,6 +386,8 @@ async def main():
         client = PostgresClient(host, username, password, dbname, port=port)
     if engine == 'sqlite3':
         client = Sqlite3Client(filepath)
+
+    client.load_schema('schema.pkl')
     editor = Editor(argv[0])
     editor.set_client(client)
     await editor.run()

@@ -20,6 +20,16 @@ class MysqlClient(ClientClass):
     async def get_databases(self) -> Result:
         return await self.execute('SHOW DATABASES')
 
+    async def load_columns(self, table) -> Result:
+        return await self.execute(f'DESC {table}')
+    
+    async def load_scheme(self) -> Result:
+        tables: Result = await self.get_tables()
+        for table in tables.data:
+            print(table)
+            print(await self.execute(f'SHOW CREATE TABLE {table["Tables_in_test"]}'))
+
+
     async def execute(self, sql) -> Result:
         if sql.strip().upper().startswith('USE '):
             db = sql.strip().split(' ')[1].rstrip(';')
