@@ -43,7 +43,7 @@ class ClickhouseClient(ClientClass):
             table_name = table['name']
             columns = await self.load_columns(table_name)
             self.schema[db_name][table_name] = [i['name'] for i in columns.data]
-        self.cache_schema(self.schema)
+        # self.cache_schema()
 
     async def execute(self, sql) -> Result:
         db = self.dbname

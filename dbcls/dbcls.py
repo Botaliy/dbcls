@@ -387,9 +387,9 @@ async def main():
     if engine == 'sqlite3':
         client = Sqlite3Client(filepath)
 
-    client.load_schema('schema.pkl')
     editor = Editor(argv[0])
     editor.set_client(client)
+    await editor.load_sql_scheme()
     await editor.run()
 
 if __name__ == '__main__':

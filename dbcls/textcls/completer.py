@@ -17,13 +17,13 @@ class SqlCompleter(Completer):
         word_before_cursor = document.get_word_before_cursor()
         if word_before_cursor.upper() == 'FROM' and schema.current_db:
             for table in schema[schema.current_db]:
-                 yield Completion(table, start_position=document.cursor_position + 1)
+                 yield Completion(table, start_position=-len(word_before_cursor))
         words = set()
         if len(word_before_cursor) == 0 or len(word_before_cursor) < 2:
             return
         for w in re.split(r"\W", word_before_cursor):
             for sw in SQL_WORDS:
-                if sw.startswith(w.upper()) and sw != w:
+                if sw.startswith(w.upper()) and sw != w.upper():
                     words.add(sw)
         for w in sorted(words):
             start_position = -len(word_before_cursor)
