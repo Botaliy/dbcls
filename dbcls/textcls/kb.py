@@ -1,6 +1,7 @@
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.filters import has_completions
 from prompt_toolkit.keys import Keys
+from textcls.schema import schema, sql_context
 
 
 def create_key_bindings(editor: 'Editor'):
@@ -14,10 +15,14 @@ def create_key_bindings(editor: 'Editor'):
         event.app.exit()
 
     @kb.add(Keys.Enter)
+    @kb.add(Keys.Tab)
     def insert_completion(event,
                           filter=has_completions):
         b = editor.editor_layout.layout.current_buffer
         if b.complete_state:
+            word = b.complete_state.current_completion.text
+            if word in schema.tables_in_current_db():
+                sql_context.current_tables.add(word)
             b.complete_state = None
             b.insert_text(" ")
         else:
@@ -29,6 +34,7 @@ def create_key_bindings(editor: 'Editor'):
         result = await editor.sql_client.execute(comm)
         editor.run_visidata(result)
         await editor.redraw()
+        sql_context.current_tables.clear()
 
     
     @kb.add(Keys.ControlS)

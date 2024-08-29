@@ -36,21 +36,13 @@ style = Style.from_dict(
     }
 )
 
+def test(arg):
+    pass
 
 class Editor:
     def __init__(self, input):
         self.input = input
         
-        def handle_action_comm(buff):
-            # if 'Y' in buff.text:
-            #     self.save_buffer()
-            #     self.app.exit() 
-            #     return
-            # if 'N' in buff.text:
-            #     self.app.exit()
-            #     return
-            print(1)
-
         def handle_action(buf):
             buf.completer.get_completions(buf.document, buf.cursor_position)
 
@@ -60,7 +52,8 @@ class Editor:
             multiline=False,
             on_text_changed=handle_action,
             complete_while_typing=True,
-            name="dummy-buffer"
+            name="dummy-buffer",
+            on_completions_changed=test
         )
         self.confirm_save_buffer = Buffer(
             multiline=False)

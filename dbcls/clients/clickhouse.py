@@ -17,6 +17,7 @@ class ClickhouseClient(ClientClass):
         self.schema = schema
         if not dbname:
             self.dbname = 'default'
+        
         if not port:
             self.port = '8123'
 
