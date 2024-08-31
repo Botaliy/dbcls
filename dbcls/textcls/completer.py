@@ -6,9 +6,7 @@ import re
 from .sql_keywords import SQL_WORDS
 from textcls.schema import schema
 from prompt_toolkit.filters import Condition, Always
-
-
-
+from textcls.utils import get_current_sql_expression
 
 class CustomCondition(Completion):
     def __init__(
@@ -54,14 +52,21 @@ class SQLKeywordsCompleter(Completer):
             yield Completion(w, start_position=start_position)
 
 
-def is_after_keyword(document, keyword, word):
+def is_after_from(document, word):
     if (
         len(word) > 0
         and len(document.current_line.upper().split(" ")) > 1
-        and document.current_line.upper().split(" ")[-2] == keyword
+        and document.current_line.upper().split(" ")[-2] == 'FROM'
     ):
         return True
 
+def is_after_word(current_sql, word):
+    if (
+        len(current_sql) > 0
+        and len(current_sql.upper().split(" ")) > 1
+        and word in current_sql.upper().split(" ")
+    ):
+        return True
 
 class SqlTablesAndColumnsCompleter(Completer):
     def get_completions(
@@ -69,7 +74,13 @@ class SqlTablesAndColumnsCompleter(Completer):
     ) -> Iterable[Completion]:
         word_before_cursor = document.get_word_before_cursor()
         words = set()
-        if is_after_keyword(document, "FROM", word_before_cursor):
+        if is_after_from(document, word_before_cursor):
+            for table in schema.tables_in_current_db():
+                if table.upper().startswith((word_before_cursor.upper())):
+                    words.add(table)
+
+        current_sql = get_current_sql_expression(document)
+        if is_after_word(current_sql, 'WHERE'):
             for table in schema.tables_in_current_db():
                 if table.upper().startswith((word_before_cursor.upper())):
                     words.add(table)

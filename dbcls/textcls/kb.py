@@ -20,9 +20,6 @@ def create_key_bindings(editor: 'Editor'):
                           filter=has_completions):
         b = editor.editor_layout.layout.current_buffer
         if b.complete_state:
-            word = b.complete_state.current_completion.text
-            if word in schema.tables_in_current_db():
-                sql_context.current_tables.add(word)
             b.complete_state = None
             b.insert_text(" ")
         else:

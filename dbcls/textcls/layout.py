@@ -15,6 +15,7 @@ from prompt_toolkit.formatted_text import FormattedText
 from prompt_toolkit.styles import Style
 from prompt_toolkit.filters import has_focus
 from prompt_toolkit.key_binding import KeyBindings
+import os
 
 style = Style.from_dict(
     {
@@ -32,8 +33,11 @@ def handle_line_prefix(buffer, wrap_count):
     return FormattedText([("class:line-numbers", f" {buffer + 1} ")])
 
 def read_file(file):
-    with open(file, "r") as f:
-        return f.read()
+    if os.path.exists(file):
+        with open(file, "r") as f:
+            return f.read()
+    else:
+        return ''
 
 class EditorLayout:
     def __init__(self, editor, input) -> None:
