@@ -3,13 +3,17 @@ from pygments.lexers.sql import MySqlLexer
 from textcls.utils import get_current_sql_command_lines
 
 class SqlLexer(Lexer):
-    # def lex_document(self, document):
-    #     result = PygmentsLexer(MySqlLexer).lex_document(document)
-    #     return result
 
     def __init__(self, editor) -> None:
         super().__init__()
         self.editor = editor
+    
+    def highlight_current_line(self, line):
+        new_list = []
+        for token in line:
+            new_list.append((f'{token[0]} bg:#d5d3d3', token[1]))
+        return new_list
+
 
     def lex_document(self, document):
         instance = self
@@ -25,10 +29,7 @@ class SqlLexer(Lexer):
             origin_result = origin_get_line(num)
             need_highlight = is_current_line_highlighted(num)
             if need_highlight:
-                new_list = []
-                for _token in origin_result:
-                    new_list.append((f'{_token[0]} bg:#adacac', _token[1]))
-                origin_result = new_list
+                origin_result = self.highlight_current_line(origin_result)
             return origin_result
 
         return get_lines

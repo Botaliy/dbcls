@@ -4,36 +4,9 @@ from prompt_toolkit.completion.base import CompleteEvent, Completion
 from prompt_toolkit.document import Document
 import re
 from .sql_keywords import SQL_WORDS
-from textcls.schema import schema
 from prompt_toolkit.filters import Condition, Always
 from textcls.utils import get_current_sql_expression
-
-# class CustomCondition(Completion):
-#     def __init__(
-#         self,
-#         text,
-#         start_position=0,
-#         display=None,
-#         display_meta=None,
-#         style="",
-#         selected_style="",
-#         action=None,
-#     ):
-#         super().__init__(
-#             text,
-#             start_position=start_position,
-#             display=display,
-#             display_meta=display_meta,
-#             style=style,
-#             selected_style=selected_style,
-#         )
-#         self.action = action
-
-#     def apply(self, document):
-#         new_document = super().apply(document)
-#         if self.action:
-#             print(f"\nВыполняется действие: {self.action}")
-#         return new_document
+from prompt_toolkit.application.current import get_app
 
 class SQLKeywordsCompleter(Completer):
     def get_completions(
@@ -68,23 +41,36 @@ def is_after_word(current_sql, word):
     ):
         return True
 
+def find_tables_in_current_sql_expression(sql_exp, tables):
+    tables_in_sql = set()
+    for table in tables:
+        if table.upper() in sql_exp.upper():
+            tables_in_sql.add(table)
+    return tables_in_sql
+
 class SqlTablesAndColumnsCompleter(Completer):
     def get_completions(
         self, document: Document, complete_event: CompleteEvent
     ) -> Iterable[Completion]:
         word_before_cursor = document.get_word_before_cursor()
         words = set()
-        if is_after_from(document, word_before_cursor):
-            for table in schema.tables_in_current_db():
+        tables = schema.tables_in_current_db()
+        if is_after_from(document, word_before_cursor) and not is_after_word(document.text, 'WHERE'):
+            for table in tables:
                 if table.upper().startswith((word_before_cursor.upper())):
                     words.add(table)
 
         start, end = get_current_sql_expression(document)
         current_sql = document.text[start:end]
         if is_after_word(current_sql, 'WHERE'):
-            for table in schema.tables_in_current_db():
-                if table.upper().startswith((word_before_cursor.upper())):
-                    words.add(table)
+            row_tables = find_tables_in_current_sql_expression(current_sql, tables)
+            if row_tables and is_after_word(current_sql, 'WHERE'):
+                for table in row_tables:
+                    columns = schema[schema.current_db][table]
+                    for column in columns:
+                        if column.upper().startswith((word_before_cursor.upper())):
+                            words.add(column)
+        
         for w in sorted(words):
             start_position = -len(word_before_cursor)
             yield Completion(w, start_position=start_position)

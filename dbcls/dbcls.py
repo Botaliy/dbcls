@@ -374,10 +374,11 @@ async def main():
             engine = config.get('engine', '')
         if not filepath:
             filepath = config.get('filepath', '')
+    editor = Editor(argv[0])
     # imported here to make db libs dependencies optional
     if engine == 'clickhouse':
         from clients.clickhouse import ClickhouseClient
-        client = ClickhouseClient(host, username, password, dbname, port=port)
+        client = ClickhouseClient(host, username, password, dbname, port=port, schema=editor.schema)
     if engine == 'mysql':
         from clients.mysql import MysqlClient
         client = MysqlClient(host, username, password, dbname, port=port)
@@ -387,9 +388,9 @@ async def main():
     if engine == 'sqlite3':
         client = Sqlite3Client(filepath)
 
-    editor = Editor(argv[0])
+    
     editor.set_client(client)
-    # await editor.load_sql_scheme()
+    editor.load_cached_schema()
     await editor.run()
 
 if __name__ == '__main__':

@@ -4,8 +4,7 @@ from dataclasses import (
     dataclass,
     field,
 )
-# import pickle
-from textcls.schema import schema
+import pickle
 
 
 @dataclass
@@ -30,7 +29,7 @@ class Result:
 class ClientClass(abc.ABC):
     ENGINE = ''
 
-    def __init__(self, host: str, username: str, password: str, dbname: str, port: str):
+    def __init__(self, host: str, username: str, password: str, dbname: str, port: str, schema):
         self.host = host
         self.username = username
         self.password = password
@@ -65,12 +64,12 @@ class ClientClass(abc.ABC):
         pass
 
     
-    # def cache_schema(self):
-    #     with suppress(Exception):
-    #         with open('schema.pkl', 'wb') as f:
-    #             pickle.dump(schema, f)
+    def cache_schema(self):
+        with suppress(Exception):
+            with open('schema.pkl', 'wb') as f:
+                pickle.dump(schema, f)
         
-    # def load_schema(self, filename):
-    #     with suppress(Exception):
-    #         with open('schema.pkl', 'rb') as f:
-    #             self.schema = pickle.load(f)
+    def load_cached_schema(self):
+        with suppress(Exception):
+            with open('schema.pkl', 'rb') as f:
+                self.schema = pickle.load(f)

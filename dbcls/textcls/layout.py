@@ -16,6 +16,7 @@ from prompt_toolkit.styles import Style
 from prompt_toolkit.filters import has_focus
 from prompt_toolkit.key_binding import KeyBindings
 import os
+from prompt_toolkit.keys import Keys
 
 style = Style.from_dict(
     {
@@ -67,6 +68,13 @@ class EditorLayout:
                     allow_cover_cursor=True,
                     xcursor=True,
                     ycursor=True,
+                ),
+                Float(
+                    content=TimerWindow(editor=editor),
+                    height=10,
+                    transparent=True,
+                    xcursor=True,
+                    ycursor=True,
                 )
             ],
         )
@@ -105,5 +113,30 @@ class BottomToolbar(ConditionalContainer):
         @kb.add('N')
         def exit(event):
             self.editor.app.exit()
+        
+        return kb
+    
+class TimerWindow(ConditionalContainer):
+    def __init__(self, editor):
+        self.editor = editor
+        super().__init__(
+            content=Window(
+                BufferControl(
+                    buffer=editor.timer_window,
+                    key_bindings=self.get_kb(),
+                ),
+                style="bg:#ffffff",
+                width=50,
+                height=8,
+            ),
+            filter=has_focus(editor.timer_window),
+        )
+    
+    def get_kb(self):
+        kb = KeyBindings()
+
+        @kb.add(Keys.Escape)
+        async def cancel_async_task(event):
+            self.editor.cancel_current_task()
         
         return kb

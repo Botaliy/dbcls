@@ -1,7 +1,6 @@
 from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.filters import has_completions
 from prompt_toolkit.keys import Keys
-from textcls.schema import schema, sql_context
 
 
 def create_key_bindings(editor: 'Editor'):
@@ -26,20 +25,24 @@ def create_key_bindings(editor: 'Editor'):
 
     @kb.add(Keys.ControlR)
     @kb.add('®')
+    @kb.add('escape','r')
     async def run_sql_command(event):
         comm = editor.get_sql_command()
-        result = await editor.sql_client.execute(comm)
+        result = await editor.async_run_command(editor.sql_client.execute, comm)
         editor.run_visidata(result)
         await editor.redraw()
-        sql_context.current_tables.clear()
 
+    @kb.add(Keys.ControlT)
+    async def renew_schema(event):
+        await editor.async_run_command(editor.load_scheme)
+
+    @kb.add(Keys.Escape)
+    async def cancel_async_task(event):
+        editor.cancel_current_task()
     
     @kb.add(Keys.ControlS)
     def save_file(event):
         editor.save_buffer()
     
-    @kb.add(Keys.ControlF)
-    async def load_sql_scheme(event):
-        await editor.load_sql_scheme()
 
     return kb
