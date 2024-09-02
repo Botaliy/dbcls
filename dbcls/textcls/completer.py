@@ -8,32 +8,32 @@ from textcls.schema import schema
 from prompt_toolkit.filters import Condition, Always
 from textcls.utils import get_current_sql_expression
 
-class CustomCondition(Completion):
-    def __init__(
-        self,
-        text,
-        start_position=0,
-        display=None,
-        display_meta=None,
-        style="",
-        selected_style="",
-        action=None,
-    ):
-        super().__init__(
-            text,
-            start_position=start_position,
-            display=display,
-            display_meta=display_meta,
-            style=style,
-            selected_style=selected_style,
-        )
-        self.action = action
+# class CustomCondition(Completion):
+#     def __init__(
+#         self,
+#         text,
+#         start_position=0,
+#         display=None,
+#         display_meta=None,
+#         style="",
+#         selected_style="",
+#         action=None,
+#     ):
+#         super().__init__(
+#             text,
+#             start_position=start_position,
+#             display=display,
+#             display_meta=display_meta,
+#             style=style,
+#             selected_style=selected_style,
+#         )
+#         self.action = action
 
-    def apply(self, document):
-        new_document = super().apply(document)
-        if self.action:
-            print(f"\nВыполняется действие: {self.action}")
-        return new_document
+#     def apply(self, document):
+#         new_document = super().apply(document)
+#         if self.action:
+#             print(f"\nВыполняется действие: {self.action}")
+#         return new_document
 
 class SQLKeywordsCompleter(Completer):
     def get_completions(
@@ -79,7 +79,8 @@ class SqlTablesAndColumnsCompleter(Completer):
                 if table.upper().startswith((word_before_cursor.upper())):
                     words.add(table)
 
-        current_sql = get_current_sql_expression(document)
+        start, end = get_current_sql_expression(document)
+        current_sql = document.text[start:end]
         if is_after_word(current_sql, 'WHERE'):
             for table in schema.tables_in_current_db():
                 if table.upper().startswith((word_before_cursor.upper())):

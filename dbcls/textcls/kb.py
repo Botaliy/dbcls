@@ -15,7 +15,6 @@ def create_key_bindings(editor: 'Editor'):
         event.app.exit()
 
     @kb.add(Keys.Enter)
-    @kb.add(Keys.Tab)
     def insert_completion(event,
                           filter=has_completions):
         b = editor.editor_layout.layout.current_buffer
@@ -26,6 +25,7 @@ def create_key_bindings(editor: 'Editor'):
             b.insert_text("\n")
 
     @kb.add(Keys.ControlR)
+    @kb.add('®')
     async def run_sql_command(event):
         comm = editor.get_sql_command()
         result = await editor.sql_client.execute(comm)

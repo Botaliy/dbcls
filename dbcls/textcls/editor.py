@@ -21,6 +21,7 @@ from textcls.layout import EditorLayout
 from textcls.completer import completer
 
 
+
 background_color = "#2C3E50"
 text_color = "#ECF0F1"
 highlight_color = "#96aeff"
@@ -53,7 +54,7 @@ class Editor:
             on_text_changed=handle_action,
             complete_while_typing=True,
             name="dummy-buffer",
-            on_completions_changed=test
+            on_completions_changed=test,
         )
         self.confirm_save_buffer = Buffer(
             multiline=False)
@@ -65,7 +66,6 @@ class Editor:
     async def run(self):
         await self.app.run_async()
     
-
     async def redraw(self):
         self.app.renderer.erase()
 
@@ -83,25 +83,7 @@ class Editor:
         self.sql_client = client
 
     def get_sql_command(self):
-        buff = self.editor_layout.layout.current_buffer
-        cursor_position = buff.cursor_position
-        text = buff.text
         
-        start = text.rfind(';', 0, cursor_position) + 1
-        end = text.find(';', cursor_position)
-        # Если конец не найден, берем до конца текста
-        if end == -1:
-            end = len(text)
-        current_command = text[start:end].strip()
-        # Если курсор находится после всех команд и current_command пустой,
-        # попробуем найти последнюю команду до курсора.
-        if not current_command:
-            last_semicolon = text.rfind(';')
-        
-            if last_semicolon != -1 and cursor_position > last_semicolon:
-                # Находим начало последней команды до последнего `;`
-                start = text.rfind(';', 0, last_semicolon) + 1
-                current_command = text[start:last_semicolon].strip()
 
         return current_command
 

@@ -54,7 +54,7 @@ class EditorLayout:
                     Window(
                         BufferControl(
                             buffer=editor.main_buffer,
-                            lexer=SqlLexer(),
+                            lexer=SqlLexer(editor)
                         ),
                         wrap_lines=True,
                         get_line_prefix=handle_line_prefix,

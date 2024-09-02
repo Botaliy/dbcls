@@ -37,6 +37,7 @@ class ClientClass(abc.ABC):
         self.dbname = dbname
         self.port = port
         self.schema = schema
+        self.schema.set_current_db(dbname)
 
     @abc.abstractmethod
     def get_databases(self) -> Result:
