@@ -1,6 +1,13 @@
+from typing import Self
 
 
 class Schema:
+
+    def __new__(cls) -> Self:
+        if not hasattr(cls, 'instance'):
+            cls.instance = super(Schema, cls).__new__(cls)
+        return cls.instance
+    
     def __init__(self):
         self.hierarchy = {}
         self.current_db = None

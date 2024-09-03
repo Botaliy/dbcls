@@ -62,7 +62,7 @@ class Editor:
         document = self.editor.main_buffer.document
         cursor_position_row = document.cursor_position_row
         start_line, end_line = get_current_sql_command_lines(document.lines, cursor_position_row)
-        current_command = self.main_buffer.document.text.lines[start_line:end_line].strip()
+        current_command = self.main_buffer.document.text[start_line:end_line].strip()
         return current_command
 
     def run_visidata(self, result):

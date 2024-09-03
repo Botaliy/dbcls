@@ -378,7 +378,7 @@ async def main():
     # imported here to make db libs dependencies optional
     if engine == 'clickhouse':
         from clients.clickhouse import ClickhouseClient
-        client = ClickhouseClient(host, username, password, dbname, port=port, schema=editor.schema)
+        client = ClickhouseClient(host, username, password, dbname, port=port)
     if engine == 'mysql':
         from clients.mysql import MysqlClient
         client = MysqlClient(host, username, password, dbname, port=port)
@@ -391,6 +391,7 @@ async def main():
     
     editor.set_client(client)
     editor.load_cached_schema()
+    editor.sql_client.schema.hierarchy['ulog'] = [1,2,3,4,5]
     await editor.run()
 
 if __name__ == '__main__':

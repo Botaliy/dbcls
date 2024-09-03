@@ -4,9 +4,10 @@ from prompt_toolkit.completion.base import CompleteEvent, Completion
 from prompt_toolkit.document import Document
 import re
 from .sql_keywords import SQL_WORDS
-from prompt_toolkit.filters import Condition, Always
 from textcls.utils import get_current_sql_expression
-from prompt_toolkit.application.current import get_app
+from textcls.schema import Schema
+
+schema = Schema()
 
 class SQLKeywordsCompleter(Completer):
     def get_completions(

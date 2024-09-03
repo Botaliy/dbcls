@@ -5,6 +5,7 @@ from dataclasses import (
     field,
 )
 import pickle
+from textcls.schema import Schema
 
 
 @dataclass
@@ -29,13 +30,13 @@ class Result:
 class ClientClass(abc.ABC):
     ENGINE = ''
 
-    def __init__(self, host: str, username: str, password: str, dbname: str, port: str, schema):
+    def __init__(self, host: str, username: str, password: str, dbname: str, port: str):
         self.host = host
         self.username = username
         self.password = password
         self.dbname = dbname
         self.port = port
-        self.schema = schema
+        self.schema = Schema()
         self.schema.set_current_db(dbname)
 
     @abc.abstractmethod

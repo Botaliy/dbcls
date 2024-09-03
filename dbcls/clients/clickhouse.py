@@ -1,7 +1,6 @@
 import aiochclient
 from aiohttp import ClientSession
 from aiohttp import ClientTimeout
-from textcls.schema import schema
 
 from .base import (
     ClientClass,
@@ -14,7 +13,6 @@ class ClickhouseClient(ClientClass):
 
     def __init__(self, host, username, password, dbname, port='8123'):
         super().__init__(host, username, password, dbname, port)
-        self.schema = schema
         if not dbname:
             self.dbname = 'default'
         
