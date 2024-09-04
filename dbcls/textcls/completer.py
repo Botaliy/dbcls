@@ -4,8 +4,8 @@ from prompt_toolkit.completion.base import CompleteEvent, Completion
 from prompt_toolkit.document import Document
 import re
 from .sql_keywords import SQL_WORDS
-from textcls.utils import get_current_sql_expression
-from textcls.schema import Schema
+from dbcls.textcls.utils import get_current_sql_expression
+from dbcls.textcls.schema import Schema
 
 schema = Schema()
 

@@ -18,7 +18,7 @@ def get_requirements():
 
 
 setup(
-    name='dbcls',
+    name='dbclstext',
     version='1.1.1',
     license='BSD',
     author='Maksim Nikitenko',
@@ -34,7 +34,7 @@ setup(
     python_requires='>=3.9',
     entry_points={
         'console_scripts': [
-            'dbcls = dbcls:main',
+            'dbcls = dbcls:dbcls.py',
         ]
     }
 )

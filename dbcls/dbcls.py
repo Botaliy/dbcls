@@ -9,9 +9,9 @@ import logging
 import visidata
 import argparse
 
-from textcls.editor import Editor
-from clients.base import Result
-from clients.sqlite3 import Sqlite3Client
+from dbcls.textcls.editor import Editor
+from dbcls.clients.base import Result
+from dbcls.clients.sqlite3 import Sqlite3Client
 
 
 client = None
@@ -23,10 +23,10 @@ def get_sel(editor) -> str:
     pass
     # selection = wnd.screen.selection
     # if not selection.is_selected():
-    #     return
     # if not selection.is_rectangular():
     #     selected_from, selected_to = selection.get_selrange()
     #     return wnd.document.gettext(selected_from, selected_to)
+    #     return
     # data = []
     # position_from, position_to, column_from, column_to = selection.get_rect_range()
 
@@ -377,13 +377,13 @@ async def main():
     editor = Editor(argv[0])
     # imported here to make db libs dependencies optional
     if engine == 'clickhouse':
-        from clients.clickhouse import ClickhouseClient
+        from dbcls.clients.clickhouse import ClickhouseClient
         client = ClickhouseClient(host, username, password, dbname, port=port)
     if engine == 'mysql':
-        from clients.mysql import MysqlClient
+        from dbcls.clients.mysql import MysqlClient
         client = MysqlClient(host, username, password, dbname, port=port)
     if engine == 'postgres':
-        from clients.postgres import PostgresClient
+        from dbcls.clients.postgres import PostgresClient
         client = PostgresClient(host, username, password, dbname, port=port)
     if engine == 'sqlite3':
         client = Sqlite3Client(filepath)
@@ -394,5 +394,5 @@ async def main():
     editor.sql_client.schema.hierarchy['ulog'] = [1,2,3,4,5]
     await editor.run()
 
-if __name__ == '__main__':
-    asyncio.run(main())
+# if __name__ == '__main__':
+asyncio.run(main())

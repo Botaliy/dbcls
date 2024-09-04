@@ -5,7 +5,7 @@ from dataclasses import (
     field,
 )
 import pickle
-from textcls.schema import Schema
+from dbcls.textcls.schema import Schema
 
 
 @dataclass

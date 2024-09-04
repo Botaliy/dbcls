@@ -62,6 +62,6 @@ class ClickhouseClient(ClientClass):
                 password = self.password,
             )
 
-            data = [dict(x) for x in await client.fetch(sql.rstrip(';'), decode=True)]
+            data = [dict(x) for x in await client.fetch(sql, decode=True)]
 
             return Result(data=data, rowcount=len(data))

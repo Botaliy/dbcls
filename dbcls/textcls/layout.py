@@ -9,7 +9,7 @@ from prompt_toolkit.layout.containers import (
 )
 from prompt_toolkit.layout.controls import BufferControl
 from prompt_toolkit.layout.containers import WindowAlign
-from textcls.lexer import SqlLexer
+from dbcls.textcls.lexer import SqlLexer
 from prompt_toolkit.layout.menus import CompletionsMenu
 from prompt_toolkit.formatted_text import FormattedText
 from prompt_toolkit.styles import Style

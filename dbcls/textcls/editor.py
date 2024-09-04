@@ -3,13 +3,12 @@ from prompt_toolkit import Application
 from prompt_toolkit.buffer import Buffer
 from prompt_toolkit.document import Document
 import visidata
-from textcls.kb import create_key_bindings
+from dbcls.textcls.kb import create_key_bindings
 from prompt_toolkit.enums import EditingMode
-from textcls.layout import EditorLayout
-from textcls.completer import completer
-from textcls.utils import get_current_sql_command_lines
+from dbcls.textcls.layout import EditorLayout
+from dbcls.textcls.completer import completer
+from dbcls.textcls.utils import get_current_sql_command_lines
 from prompt_toolkit.styles import Style
-from textcls.schema import Schema
 
 style = Style.from_dict({
     'pygments.keyword': 'bold #fc3232',
@@ -62,8 +61,11 @@ class Editor:
         document = self.editor.main_buffer.document
         cursor_position_row = document.cursor_position_row
         start_line, end_line = get_current_sql_command_lines(document.lines, cursor_position_row)
-        current_command = self.main_buffer.document.text[start_line:end_line].strip()
-        return current_command
+        sql_command = ''
+        for line in self.main_buffer.document.lines:
+            sql_command += line
+        # current_command = self.main_buffer.document.text[start_line:end_line].strip()
+        return sql_command
 
     def run_visidata(self, result):
         visidata.vd.run()

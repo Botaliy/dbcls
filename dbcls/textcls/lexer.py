@@ -1,6 +1,6 @@
 from prompt_toolkit.lexers import Lexer, PygmentsLexer
 from pygments.lexers.sql import MySqlLexer
-from textcls.utils import get_current_sql_command_lines
+from dbcls.textcls.utils import get_current_sql_command_lines
 
 class SqlLexer(Lexer):
 
@@ -11,7 +11,7 @@ class SqlLexer(Lexer):
     def highlight_current_line(self, line):
         new_list = []
         for token in line:
-            new_list.append((f'{token[0]} bg:#d5d3d3', token[1]))
+            new_list.append((f'{token[0]} bg:#e8e8e8', token[1]))
         return new_list
 
 
